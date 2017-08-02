@@ -12,6 +12,12 @@ import org.jetbrains.annotations.Nullable;
 )
 
 public class MCSettingsProvider implements PersistentStateComponent<MCSettingsProvider.State> {
+    /** Default port for <code>cmds.commandPort()</code> */
+    public static final String DEFAULT_HOST = "localhost";
+
+    /** Default host name/address for <code>cmds.commandPort()</code> */
+    public static final int DEFAULT_PORT = 4434;
+
     private State myState = new State();
 
     public void setPort(int port) {
@@ -19,7 +25,7 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
     }
 
     public int getPort() {
-        return (myState.Port == -1 || myState.Port == 0) ? 4434 : myState.Port;
+        return (myState.Port == -1 || myState.Port == 0) ? DEFAULT_PORT : myState.Port;
     }
 
     public void setHost(String host) {
@@ -27,7 +33,7 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
     }
 
     public String getHost() {
-        return (myState.Host == null || myState.Host.isEmpty()) ? "localhost" : myState.Host;
+        return (myState.Host == null || myState.Host.isEmpty()) ? DEFAULT_HOST : myState.Host;
     }
 
     public static MCSettingsProvider getInstance(Project project) {

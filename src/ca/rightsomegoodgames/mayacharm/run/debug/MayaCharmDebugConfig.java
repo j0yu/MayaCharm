@@ -18,6 +18,10 @@ import java.io.File;
 
 public class MayaCharmDebugConfig extends PyRemoteDebugConfiguration implements MayaCharmRunProfile {
     private static final SkipDefaultsSerializationFilter SERIALIZATION_FILTER = new SkipDefaultsSerializationFilter();
+
+    /** Default port for remote debug */
+    public static final int DEFAULT_PORT = 60059;
+
     private String scriptFilePath;
     private String scriptCodeText;
     private ExecutionType executionType = ExecutionType.DEBUG;
@@ -105,7 +109,7 @@ public class MayaCharmDebugConfig extends PyRemoteDebugConfiguration implements 
     @Override
     public int getPort() {
         int port = super.getPort();
-        return (port == 0 || port == -1) ? 60059 : port;
+        return (port == 0 || port == -1) ? DEFAULT_PORT : port;
     }
 
     public enum ExecutionType {
