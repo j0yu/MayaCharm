@@ -1,6 +1,8 @@
 package ca.rightsomegoodgames.mayacharm.attach;
 
+import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
+import ca.rightsomegoodgames.mayacharm.settings.MCSettingsProvider;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.ui.ConsoleViewContentType;
@@ -38,18 +40,8 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
     }
 
     private XDebugSession launchRemoteDebugServer() throws ExecutionException {
-        final ServerSocket serverSocket;
-        try {
-            //noinspection SocketOpenedButNotSafelyClosed
-            serverSocket = new ServerSocket(0);
-        }
-        catch (IOException e) {
-            throw new ExecutionException("Failed to find free socket port", e);
-        }
-
-
+        final ServerSocket serverSocket = MCSettingsProvider.getInstance(myProject).getAttachSocket();
         PyAttachToProcessCommandLineState state = PyAttachToProcessCommandLineState.create(myProject, mySdkPath, serverSocket.getLocalPort(), myPid);
-
         final ExecutionResult result = state.execute(state.getEnvironment().getExecutor(), this);
 
         //start remote debug server
@@ -62,13 +54,11 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                                 result.getProcessHandler(), "") {
                             @Override
                             protected void printConsoleInfo() {
-                                this.printToConsole("Starting debug server at port " + serverSocket.getLocalPort() + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("Use the following code to connect to the debugger:\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("\n\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("import sys\nsys.path.append(r'"+ PythonStrings.PYDEVD_FOLDER +"')\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("import pydevd\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("pydevd.settrace('127.0.0.1', port="+serverSocket.getLocalPort()+")\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("\n\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+                                this.printToConsole(String.format(
+                                        "Starting debug server at port %2$d\nUse the following code to connect to the debugger:\n\n\n" +
+                                        MayaCharmProperties.getString("attachlocal.script") + "\n\n\n",
+                                        PythonStrings.PYDEVD_FOLDER, serverSocket.getLocalPort()), ConsoleViewContentType.SYSTEM_OUTPUT
+                                );
                             }
 
                             @Override
