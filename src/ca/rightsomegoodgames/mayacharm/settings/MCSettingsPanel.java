@@ -24,18 +24,14 @@ public class MCSettingsPanel {
     private JTextField attachSocketPortField;
 
     private ServerSocket newAttachSocket;
-    private final String mayaDefaultString;
-    private final String attachDefaultString;
     private final MCSettingsProvider mcSettingsProvider;
 
     public MCSettingsPanel(MCSettingsProvider provider) {
         mcSettingsProvider = provider;
-        mayaDefaultString = mayaString.getText();
-        attachDefaultString = pydevdString.getText();
 
         portField.getDocument().addDocumentListener(new DocumentListener() {
             private void updateMayaString() {
-                mayaString.setText(String.format(mayaDefaultString, portField.getText(), portField.getText()));
+                mayaString.setText(String.format(MayaCharmProperties.getString("commandport.script"), portField.getText()));
             }
 
             @Override
@@ -50,7 +46,7 @@ public class MCSettingsPanel {
 
         attachSocketPortField.getDocument().addDocumentListener(new DocumentListener() {
             private void updateAttachString() {
-                pydevdString.setText(String.format(attachDefaultString, PythonStrings.PYDEVD_FOLDER, PythonStrings.PYDEVD_FOLDER, attachSocketPortField.getText()));
+                pydevdString.setText(String.format(MayaCharmProperties.getString("attachlocal.script"), PythonStrings.PYDEVD_FOLDER, attachSocketPortField.getText()));
             }
 
             @Override
@@ -75,7 +71,6 @@ public class MCSettingsPanel {
                 generateNewAttachSocket();
             }
         };
-
 //        // PyCharm suggested the above "lambda" instead (works fine). Remove this if "lambda" is ok for coding style/readability
 //        ActionListener buttonActionListener = new ActionListener() {
 //            @Override

@@ -3,7 +3,7 @@
   <grid id="27dc6" binding="myPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
-      <xy x="20" y="20" width="437" height="541"/>
+      <xy x="20" y="20" width="437" height="537"/>
     </constraints>
     <properties/>
     <border type="none"/>
@@ -61,7 +61,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="import maya.cmds as cmds&#10;if not cmds.commandPort(':%s', q=True):&#10;    cmds.commandPort(n=':%s')"/>
+              <text resource-bundle="ca/rightsomegoodgames/mayacharm/resources/MayaCharm" key="commandport.script"/>
             </properties>
           </component>
           <component id="b468f" class="javax.swing.JButton" binding="resetPortButton">
@@ -180,7 +180,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="import sys&#10;if r'%s' not in sys.path:&#10;    sys.path.append(r'%s')&#10;&#10;import pydevd&#10;pydevd.settrace(port=%s, &#10;                host=&quot;127.0.0.1&quot;, &#10;                stdoutToServer=True, &#10;                stderrToServer=True, &#10;                suspend=True)"/>
+              <text resource-bundle="ca/rightsomegoodgames/mayacharm/resources/MayaCharm" key="attachlocal.script"/>
             </properties>
           </component>
           <component id="430c3" class="javax.swing.JButton" binding="newSocketButton">
