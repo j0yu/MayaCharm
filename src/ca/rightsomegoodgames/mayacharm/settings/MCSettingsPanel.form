@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form xmlns="http://www.intellij.com/uidesigner/form/" version="1" bind-to-class="ca.rightsomegoodgames.mayacharm.settings.MCSettingsPanel">
-  <grid id="27dc6" binding="myPanel" layout-manager="GridLayoutManager" row-count="6" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
+  <grid id="27dc6" binding="myPanel" layout-manager="GridLayoutManager" row-count="7" column-count="2" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
     <margin top="0" left="0" bottom="0" right="0"/>
     <constraints>
       <xy x="20" y="20" width="437" height="541"/>
@@ -156,7 +156,7 @@
       <grid id="4d825" layout-manager="GridLayoutManager" row-count="3" column-count="3" same-size-horizontally="false" same-size-vertically="false" hgap="-1" vgap="-1">
         <margin top="0" left="0" bottom="0" right="0"/>
         <constraints>
-          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
+          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="3" hsize-policy="3" anchor="0" fill="3" indent="0" use-parent-layout="false">
             <preferred-size width="177" height="183"/>
           </grid>
         </constraints>
@@ -180,7 +180,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="import sys&#10;if not r':%s' in sys.path:&#10;    sys.path.append(r':%s')&#10;&#10;import pydevd&#10;pydevd.settrace(port=:%d, &#10;                host=&quot;127.0.0.1&quot;, &#10;                stdoutToServer=True, &#10;                stderrToServer=True, &#10;                suspend=True)"/>
+              <text value="import sys&#10;if r'%s' not in sys.path:&#10;    sys.path.append(r'%s')&#10;&#10;import pydevd&#10;pydevd.settrace(port=%s, &#10;                host=&quot;127.0.0.1&quot;, &#10;                stdoutToServer=True, &#10;                stderrToServer=True, &#10;                suspend=True)"/>
             </properties>
           </component>
           <component id="430c3" class="javax.swing.JButton" binding="newSocketButton">
@@ -191,7 +191,7 @@
               <text value="Generate New"/>
             </properties>
           </component>
-          <component id="99d30" class="javax.swing.JTextField">
+          <component id="99d30" class="javax.swing.JTextField" binding="attachSocketPortField">
             <constraints>
               <grid row="0" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="6" anchor="8" fill="1" indent="0" use-parent-layout="false">
                 <preferred-size width="150" height="-1"/>
@@ -215,7 +215,7 @@
       </grid>
       <vspacer id="62d58">
         <constraints>
-          <grid row="5" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
+          <grid row="6" column="0" row-span="1" col-span="1" vsize-policy="6" hsize-policy="1" anchor="0" fill="2" indent="0" use-parent-layout="false">
             <preferred-size width="177" height="14"/>
           </grid>
         </constraints>
@@ -225,6 +225,17 @@
           <grid row="2" column="1" row-span="1" col-span="1" vsize-policy="1" hsize-policy="6" anchor="0" fill="1" indent="0" use-parent-layout="false"/>
         </constraints>
       </hspacer>
+      <component id="2b511" class="javax.swing.JLabel">
+        <constraints>
+          <grid row="4" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="10" fill="0" indent="0" use-parent-layout="false">
+            <minimum-size width="-1" height="25"/>
+          </grid>
+        </constraints>
+        <properties>
+          <font style="1"/>
+          <text value="WARNING: This port may be different per PyCharm session"/>
+        </properties>
+      </component>
     </children>
   </grid>
 </form>

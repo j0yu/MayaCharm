@@ -3,7 +3,11 @@ package ca.rightsomegoodgames.mayacharm.settings;
 import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.net.ServerSocket;
 
 @State(
         name = "MCSettingsProvider",
@@ -32,6 +36,21 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
         return (myState.Host == null || myState.Host.isEmpty()) ? MayaCharmProperties.getString("commandport.host") : myState.Host;
     }
 
+    public void setAttachSocket(ServerSocket socket) { myState.AttachSocket = socket; }
+
+    public ServerSocket getAttachSocket() {
+        if (myState.AttachSocket == null) {
+            try {
+                setAttachSocket(generateNewAttachSocket());
+            } catch (IOException e) {
+                e.printStackTrace();
+                Messages.showErrorDialog("Fatal Error: Failed to find free socket port.\nSocket returned may be null",
+                                         "No Free Ports");
+            }
+        }
+        return myState.AttachSocket;
+    }
+
     public static MCSettingsProvider getInstance(Project project) {
         return ServiceManager.getService(project, MCSettingsProvider.class);
     }
@@ -47,9 +66,12 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
         myState.Host = state.Host;
         myState.Port = state.Port;
     }
-
+    public ServerSocket generateNewAttachSocket() throws IOException {
+        return new ServerSocket(0);
+    }
     public static class State {
         public int Port;
         public String Host;
+        public ServerSocket AttachSocket;
     }
 }
