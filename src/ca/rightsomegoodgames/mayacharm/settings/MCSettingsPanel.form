@@ -61,7 +61,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="import maya.cmds as cmds&#10;if not cmds.commandPort(':%s', q=True):&#10;    cmds.commandPort(n=':%s') &#10;&#10;print &quot;wowsers&quot;"/>
+              <text value="import maya.cmds as cmds&#10;if not cmds.commandPort(':%s', q=True):&#10;    cmds.commandPort(n=':%s')"/>
             </properties>
           </component>
           <component id="b468f" class="javax.swing.JButton" binding="resetPortButton">
@@ -79,7 +79,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="12345"/>
+              <text resource-bundle="ca/rightsomegoodgames/mayacharm/resources/MayaCharm" key="commandport.port"/>
             </properties>
           </component>
           <component id="58479" class="javax.swing.JTextField" binding="hostField">
@@ -89,7 +89,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="localhost"/>
+              <text resource-bundle="ca/rightsomegoodgames/mayacharm/resources/MayaCharm" key="commandport.host"/>
             </properties>
           </component>
           <component id="f29ba" class="javax.swing.JButton" binding="resetHostButton">
@@ -105,6 +105,7 @@
               <grid row="1" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false"/>
             </constraints>
             <properties>
+              <labelFor value="b9378"/>
               <text value="Port Number:"/>
             </properties>
           </component>
@@ -169,7 +170,7 @@
               </grid>
             </constraints>
             <properties>
-              <text value="Run the following in Maya to manually connect to PyCharm"/>
+              <text value="Run the following in Maya to manually connect to PyCharm for debugging"/>
             </properties>
           </component>
           <component id="8bd7b" class="javax.swing.JTextArea" binding="pydevdString">
