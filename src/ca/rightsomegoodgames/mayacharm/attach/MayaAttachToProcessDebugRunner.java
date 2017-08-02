@@ -1,16 +1,15 @@
 package ca.rightsomegoodgames.mayacharm.attach;
 
+import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
 import com.intellij.execution.ui.ConsoleViewContentType;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.xdebugger.XDebugProcess;
 import com.intellij.xdebugger.XDebugProcessStarter;
 import com.intellij.xdebugger.XDebugSession;
 import com.intellij.xdebugger.XDebuggerManager;
-import com.jetbrains.python.PythonHelper;
 import com.jetbrains.python.debugger.PyLocalPositionConverter;
 import com.jetbrains.python.debugger.PyRemoteDebugProcess;
 import com.jetbrains.python.debugger.attach.PyAttachToProcessCommandLineState;
@@ -63,13 +62,10 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                                 result.getProcessHandler(), "") {
                             @Override
                             protected void printConsoleInfo() {
-                                String pydevdPath = PythonHelper.DEBUGGER.asParamString();
-                                String pydevdFolder = pydevdPath.substring(0, pydevdPath.length()-10);
-
                                 this.printToConsole("Starting debug server at port " + serverSocket.getLocalPort() + "\n", ConsoleViewContentType.SYSTEM_OUTPUT);
                                 this.printToConsole("Use the following code to connect to the debugger:\n", ConsoleViewContentType.SYSTEM_OUTPUT);
                                 this.printToConsole("\n\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
-                                this.printToConsole("import sys\nsys.path.append(r'"+pydevdFolder+"')\n", ConsoleViewContentType.SYSTEM_OUTPUT);
+                                this.printToConsole("import sys\nsys.path.append(r'"+ PythonStrings.PYDEVD_FOLDER +"')\n", ConsoleViewContentType.SYSTEM_OUTPUT);
                                 this.printToConsole("import pydevd\n", ConsoleViewContentType.SYSTEM_OUTPUT);
                                 this.printToConsole("pydevd.settrace('127.0.0.1', port="+serverSocket.getLocalPort()+")\n", ConsoleViewContentType.SYSTEM_OUTPUT);
                                 this.printToConsole("\n\n\n", ConsoleViewContentType.SYSTEM_OUTPUT);
