@@ -1,5 +1,6 @@
 package ca.rightsomegoodgames.mayacharm.attach;
 
+import ca.rightsomegoodgames.mayacharm.mayacomms.MayaCommInterface;
 import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
 import ca.rightsomegoodgames.mayacharm.settings.MCSettingsProvider;
@@ -18,7 +19,7 @@ import com.jetbrains.python.debugger.attach.PyAttachToProcessCommandLineState;
 import com.jetbrains.python.debugger.attach.PyAttachToProcessDebugRunner;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.IOException;
+import java.net.ConnectException;
 import java.net.ServerSocket;
 
 public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner {
@@ -49,16 +50,18 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                 startSessionAndShowTab(String.valueOf(myPid), null, new XDebugProcessStarter() {
                     @org.jetbrains.annotations.NotNull
                     public XDebugProcess start(@NotNull final XDebugSession session) {
+                    String attachLocalScript = String.format(
+                            MayaCharmProperties.getString("attachlocal.script"),
+                            PythonStrings.PYDEVD_FOLDER, serverSocket.getLocalPort()
+                    );
                     PyRemoteDebugProcess pyDebugProcess =
                         new PyRemoteDebugProcess(session, serverSocket, result.getExecutionConsole(),
-                                result.getProcessHandler(), "") {
+                                result.getProcessHandler(), "\n"+attachLocalScript+"\n\n") {
+                            private boolean autoAttached = false;
+
                             @Override
                             protected void printConsoleInfo() {
-                                this.printToConsole(String.format(
-                                        "Starting debug server at port %2$d\nUse the following code to connect to the debugger:\n\n\n" +
-                                        MayaCharmProperties.getString("attachlocal.script") + "\n\n\n",
-                                        PythonStrings.PYDEVD_FOLDER, serverSocket.getLocalPort()), ConsoleViewContentType.SYSTEM_OUTPUT
-                                );
+                                if (!autoAttached) super.printConsoleInfo();
                             }
 
                             @Override
@@ -69,6 +72,21 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                             @Override
                             protected String getConnectionTitle() {
                                 return "Attaching Debugger";
+                            }
+
+                            @Override
+                            protected void afterConnect() {
+                                super.afterConnect();
+
+                                MCSettingsProvider settings = MCSettingsProvider.getInstance(getProject());
+                                MayaCommInterface connection = new MayaCommInterface(settings.getHost(), settings.getPort());
+
+                                try {
+                                    connection.sendCodeToMaya(attachLocalScript);
+                                    autoAttached = true;
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
                             }
                         };
                     pyDebugProcess.setPositionConverter(new PyLocalPositionConverter());
