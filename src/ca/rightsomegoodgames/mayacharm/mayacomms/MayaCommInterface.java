@@ -1,5 +1,6 @@
 package ca.rightsomegoodgames.mayacharm.mayacomms;
 
+import b.b.F;
 import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import com.intellij.notification.Notifications;
 import ca.rightsomegoodgames.mayacharm.resources.MayaNotifications;
@@ -8,6 +9,7 @@ import com.intellij.openapi.application.PathManager;
 import org.apache.sanselan.util.IOUtils;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
@@ -17,6 +19,7 @@ import java.text.MessageFormat;
 public class MayaCommInterface {
     public static final String LOG_FILENAME_STRING = "/mayalog%s.txt";
 
+    private boolean sendSuccess = false;
     final private String host;
     final private int port;
     final private String logFilename;
@@ -61,10 +64,12 @@ public class MayaCommInterface {
             String outString = MessageFormat.format(
                     PythonStrings.EXECFILE, message.toString().replace("\\", "/"));
             out.println(outString);
+            sendSuccess = true;
         }
         catch (IOException e) {
             Notifications.Bus.notify(MayaNotifications.CONNECTION_REFUSED);
             e.printStackTrace();
+            sendSuccess = false;
         }
         finally {
             if (out != null)
@@ -142,5 +147,9 @@ public class MayaCommInterface {
             mayaLog.createNewFile();
         }
         return mayaLog;
+    }
+
+    public boolean isSendSuccess() {
+        return sendSuccess;
     }
 }
