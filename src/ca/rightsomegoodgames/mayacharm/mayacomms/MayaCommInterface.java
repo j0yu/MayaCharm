@@ -1,11 +1,10 @@
 package ca.rightsomegoodgames.mayacharm.mayacomms;
 
-import b.b.F;
 import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
-import com.intellij.notification.Notifications;
 import ca.rightsomegoodgames.mayacharm.resources.MayaNotifications;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
 import com.intellij.openapi.application.PathManager;
+import com.intellij.notification.Notifications;
 import org.apache.sanselan.util.IOUtils;
 
 import java.io.*;
@@ -68,7 +67,16 @@ public class MayaCommInterface {
         }
         catch (IOException e) {
             Notifications.Bus.notify(MayaNotifications.CONNECTION_REFUSED);
-            e.printStackTrace();
+
+            // Tack on host and port information
+            String extendedMessage = String.format("(%s:%s) %s", host, port, e.getLocalizedMessage());
+            try {
+                IOException eExtended = e.getClass().getConstructor(String.class).newInstance(extendedMessage);
+                eExtended.setStackTrace(e.getStackTrace());
+                eExtended.printStackTrace();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e1) {
+                new IOException(extendedMessage, e).printStackTrace();
+            }
             sendSuccess = false;
         }
         finally {
