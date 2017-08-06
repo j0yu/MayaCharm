@@ -1,5 +1,6 @@
 package ca.rightsomegoodgames.mayacharm.mayacomms;
 
+import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import com.intellij.notification.Notifications;
 import ca.rightsomegoodgames.mayacharm.resources.MayaNotifications;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
@@ -103,6 +104,13 @@ public class MayaCommInterface {
         }
         lines = String.format(lines, debugEggPath);
         sendCodeToMaya(lines);
+    }
+
+    public void pyDevSetup2() {
+        sendCodeToMaya(String.format(
+                MayaCharmProperties.getString("pydevdscript.syspath"),
+                PythonStrings.PYDEVD_FOLDER
+        ));
     }
 
     public void setTrace(int port, boolean suspend, boolean print) {
