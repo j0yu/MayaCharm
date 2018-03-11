@@ -15,7 +15,7 @@ public class MayaCharmDebugProcess extends PyRemoteDebugProcess {
     final private ServerSocket socket;
     final private MayaCharmDebugConfig config;
     final private MCSettingsProvider settings;
-    final private MayaCommInterface mayaCommInterface;
+    final protected MayaCommInterface mayaCommInterface;
     private boolean canConnect;
 
     public MayaCharmDebugProcess(@NotNull XDebugSession xDebugSession, @NotNull ServerSocket serverSocket, @NotNull ExecutionConsole executionConsole, @Nullable ProcessHandler processHandler, @Nullable String s) {
@@ -35,8 +35,14 @@ public class MayaCharmDebugProcess extends PyRemoteDebugProcess {
     @Override
     protected void beforeConnect() {
         if (canConnect) {
-            mayaCommInterface.pyDevSetup();
-            mayaCommInterface.setTrace(socket.getLocalPort(), config.isSuspendAfterConnect(), config.isRedirectOutput());
+            mayaCommInterface.pyDevSetup2();
+            if (mayaCommInterface.isSendSuccess()) {
+                if (config == null) {
+                    mayaCommInterface.setTrace(socket.getLocalPort(), false, true);
+                } else {
+                    mayaCommInterface.setTrace(socket.getLocalPort(), config.isSuspendAfterConnect(), config.isRedirectOutput());
+                }
+            }
         }
         super.beforeConnect();
     }
