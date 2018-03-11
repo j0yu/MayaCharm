@@ -3,6 +3,7 @@ package ca.rightsomegoodgames.mayacharm.attach;
 import ca.rightsomegoodgames.mayacharm.mayacomms.MayaCommInterface;
 import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
+import ca.rightsomegoodgames.mayacharm.run.debug.MayaCharmDebugProcess;
 import ca.rightsomegoodgames.mayacharm.settings.MCSettingsProvider;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionResult;
@@ -50,51 +51,48 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                 startSessionAndShowTab(String.valueOf(myPid), null, new XDebugProcessStarter() {
                     @org.jetbrains.annotations.NotNull
                     public XDebugProcess start(@NotNull final XDebugSession session) {
-                    String attachLocalScript = String.format(
-                            MayaCharmProperties.getString("attachlocal.script"),
-                            PythonStrings.PYDEVD_FOLDER, serverSocket.getLocalPort()
-                    );
-                    PyRemoteDebugProcess pyDebugProcess =
-                        new PyRemoteDebugProcess(session, serverSocket, result.getExecutionConsole(),
-                                result.getProcessHandler(), "\n"+attachLocalScript+"\n\n") {
-                            private boolean autoAttached = false;
+                        String attachLocalScript = String.format(
+                                MayaCharmProperties.getString("attachlocal.script"),
+                                PythonStrings.PYDEVD_FOLDER, serverSocket.getLocalPort()
+                        );
+                        MayaCharmDebugProcess pyDebugProcess =
+                                new MayaCharmDebugProcess(session, serverSocket, result.getExecutionConsole(),
+                                        result.getProcessHandler(), "\n"+attachLocalScript+"\n\n") {
+                                    @Override
+                                    protected void printConsoleInfo() {
+                                    }
 
-                            @Override
-                            protected void printConsoleInfo() {
-                                if (!autoAttached) super.printConsoleInfo();
-                            }
+                                    @Override
+                                    protected String getConnectionMessage() {
+                                        if (!mayaCommInterface.isSendSuccess()) super.printConsoleInfo();
+                                        return "Attaching to a Maya(py) process with PID = " + myPid;
+                                    }
 
-                            @Override
-                            protected String getConnectionMessage() {
-                                return "Attaching to a Maya(py) process with PID = " + myPid;
-                            }
+                                    @Override
+                                    protected String getConnectionTitle() {
+                                        return "Attaching Debugger";
+                                    }
 
-                            @Override
-                            protected String getConnectionTitle() {
-                                return "Attaching Debugger";
-                            }
+//                                    @Override
+//                                    protected void afterConnect() {
+//                                        super.afterConnect();
+//
+//                                        MCSettingsProvider settings = MCSettingsProvider.getInstance(getProject());
+//                                        MayaCommInterface connection = new MayaCommInterface(settings.getHost(), settings.getPort());
+//
+//                                        try {
+//                                            connection.sendCodeToMaya(attachLocalScript);
+//                                            autoAttached = true;
+//                                        } catch (Exception e) {
+//                                            e.printStackTrace();
+//                                        }
+//                                    }
+                                };
+                        pyDebugProcess.setPositionConverter(new PyLocalPositionConverter());
 
-                            @Override
-                            protected void afterConnect() {
-                                super.afterConnect();
+                        createConsoleCommunicationAndSetupActions(myProject, result, pyDebugProcess, session);
 
-                                MCSettingsProvider settings = MCSettingsProvider.getInstance(getProject());
-                                MayaCommInterface connection = new MayaCommInterface(settings.getHost(), settings.getPort());
-
-                                try {
-                                    connection.sendCodeToMaya(attachLocalScript);
-                                    autoAttached = true;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        };
-                    pyDebugProcess.setPositionConverter(new PyLocalPositionConverter());
-
-
-                    createConsoleCommunicationAndSetupActions(myProject, result, pyDebugProcess, session);
-
-                    return pyDebugProcess;
+                        return pyDebugProcess;
                     }
                 });
     }
