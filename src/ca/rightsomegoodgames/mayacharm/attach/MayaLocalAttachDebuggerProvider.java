@@ -19,6 +19,7 @@ import org.jetbrains.annotations.NotNull;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class MayaLocalAttachDebuggerProvider implements XLocalAttachDebuggerProvider {
     private static final Key<List<XLocalAttachDebugger>> DEBUGGERS_KEY = Key.create("MayaLocalAttachDebuggerProvider.DEBUGGERS");
@@ -42,18 +43,21 @@ public class MayaLocalAttachDebuggerProvider implements XLocalAttachDebuggerProv
                 List<XLocalAttachDebugger> result = contextHolder.getUserData(DEBUGGERS_KEY);
                 if (result != null) return result;
 
-                if (processInfo.getExecutableCannonicalPath().isPresent() &&
-                        new File(processInfo.getExecutableCannonicalPath().get()).exists()) {
-                    result =
-                            Lists.newArrayList(new PyLocalAttachDebugger(processInfo.getExecutableCannonicalPath().get()));
-                }
-                else {
-                    result = ContainerUtil.map(PythonSdkType.getAllLocalCPythons(), sdk -> new PyLocalAttachDebugger(sdk));
+                Optional<String> cannonicalPath = processInfo.getExecutableCannonicalPath();
+                if (cannonicalPath.isPresent()) {
+                    String pathname = cannonicalPath.get();
+                    if (new File(pathname).exists()) {
+                        result = Lists.newArrayList(new PyLocalAttachDebugger(pathname));
+                    }
+                } else {
+                    result = ContainerUtil.map(
+                            PythonSdkType.getAllLocalCPythons(),
+                            PyLocalAttachDebugger::new
+                    );
                 }
 
                 // most recent python version goes first
-                Collections.sort(result, (a, b) -> -a.getDebuggerDisplayName().compareToIgnoreCase(b.getDebuggerDisplayName()));
-
+                result.sort((a, b) -> -a.getDebuggerDisplayName().compareToIgnoreCase(b.getDebuggerDisplayName()));
                 contextHolder.putUserData(DEBUGGERS_KEY, Collections.unmodifiableList(result));
                 return result;
             }

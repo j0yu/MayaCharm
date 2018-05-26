@@ -43,8 +43,7 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.event.InputEvent;
 import java.util.*;
 
-class AttachToLocalMayaProcessAction extends AnAction
-{
+class AttachToLocalMayaProcessAction extends AnAction {
     private static final Key<LinkedHashMap<String, AttachToLocalMayaProcessAction.HistoryItem>> HISTORY_KEY = Key.create("AttachToLocalMayaProcessAction.HISTORY_KEY");
 
     public AttachToLocalMayaProcessAction() {
@@ -82,7 +81,7 @@ class AttachToLocalMayaProcessAction extends AnAction
 //        Attach finished successfully.
 
 
-                new Task.Backgroundable(project, XDebuggerBundle.message("xdebugger.attach.toLocal.action.collectingProcesses"), true, PerformInBackgroundOption.DEAF) {
+        new Task.Backgroundable(project, XDebuggerBundle.message("xdebugger.attach.toLocal.action.collectingProcesses"), true, PerformInBackgroundOption.DEAF) {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
                 ProcessInfo[] processList = OSProcessUtil.getProcessList();
@@ -107,9 +106,9 @@ class AttachToLocalMayaProcessAction extends AnAction
                         }
 
                         if (item instanceof AttachToLocalMayaProcessAction.AttachItem) {
-                            String debuggerName = ((AttachToLocalMayaProcessAction.AttachItem)item).getSelectedDebugger().getDebuggerDisplayName();
+                            String debuggerName = ((AttachToLocalMayaProcessAction.AttachItem) item).getSelectedDebugger().getDebuggerDisplayName();
                             debuggerName = StringUtil.shortenTextWithEllipsis(debuggerName, 50, 0);
-                            ((ListPopupImpl)popup).setCaption(XDebuggerBundle.message("xdebugger.attach.toLocal.popup.title", debuggerName));
+                            ((ListPopupImpl) popup).setCaption(XDebuggerBundle.message("xdebugger.attach.toLocal.popup.title", debuggerName));
                         }
                     };
                     popup.addListSelectionListener(listener);
@@ -124,10 +123,11 @@ class AttachToLocalMayaProcessAction extends AnAction
     }
 
     @NotNull
-    public static List<AttachToLocalMayaProcessAction.AttachItem> collectAttachItems(@NotNull final Project project,
-                                                                                 @NotNull ProcessInfo[] processList,
-                                                                                 @NotNull ProgressIndicator indicator,
-                                                                                 @NotNull MayaLocalAttachDebuggerProvider... providers) {
+    public static List<AttachToLocalMayaProcessAction.AttachItem> collectAttachItems(
+            @NotNull final Project project,
+            @NotNull ProcessInfo[] processList,
+            @NotNull ProgressIndicator indicator,
+            @NotNull MayaLocalAttachDebuggerProvider... providers) {
         MultiMap<XLocalAttachGroup, Pair<ProcessInfo, ArrayList<XLocalAttachDebugger>>> groupWithItems = new MultiMap<>();
 
         UserDataHolderBase dataHolder = new UserDataHolderBase();
@@ -136,13 +136,19 @@ class AttachToLocalMayaProcessAction extends AnAction
             MultiMap<XLocalAttachGroup, XLocalAttachDebugger> groupsWithDebuggers = new MultiMap<>();
             for (MayaLocalAttachDebuggerProvider eachProvider : providers) {
                 indicator.checkCanceled();
-                groupsWithDebuggers.putValues(eachProvider.getAttachGroup(), eachProvider.getAvailableDebuggers(project, eachInfo, dataHolder));
+                groupsWithDebuggers.putValues(
+                        eachProvider.getAttachGroup(),
+                        eachProvider.getAvailableDebuggers(project, eachInfo, dataHolder)
+                );
             }
 
             for (XLocalAttachGroup eachGroup : groupsWithDebuggers.keySet()) {
                 Collection<XLocalAttachDebugger> debuggers = groupsWithDebuggers.get(eachGroup);
                 if (!debuggers.isEmpty()) {
-                    groupWithItems.putValue(eachGroup, Pair.create(eachInfo, new ArrayList<>(debuggers)));
+                    groupWithItems.putValue(
+                            eachGroup,
+                            Pair.create(eachInfo, new ArrayList<>(debuggers))
+                    );
                 }
             }
         }
@@ -219,9 +225,12 @@ class AttachToLocalMayaProcessAction extends AnAction
     }
 
     public static class HistoryItem {
-        @NotNull private final ProcessInfo myProcessInfo;
-        @NotNull private final XLocalAttachGroup myGroup;
-        @NotNull private final String myDebuggerName;
+        @NotNull
+        private final ProcessInfo myProcessInfo;
+        @NotNull
+        private final XLocalAttachGroup myGroup;
+        @NotNull
+        private final String myDebuggerName;
 
         public HistoryItem(@NotNull ProcessInfo processInfo,
                            @NotNull XLocalAttachGroup group,
@@ -251,13 +260,11 @@ class AttachToLocalMayaProcessAction extends AnAction
             if (this == o) return true;
             if (o == null || getClass() != o.getClass()) return false;
 
-            AttachToLocalMayaProcessAction.HistoryItem item = (AttachToLocalMayaProcessAction.HistoryItem)o;
+            AttachToLocalMayaProcessAction.HistoryItem item = (AttachToLocalMayaProcessAction.HistoryItem) o;
 
             if (!myProcessInfo.equals(item.myProcessInfo)) return false;
             if (!myGroup.equals(item.myGroup)) return false;
-            if (!myDebuggerName.equals(item.myDebuggerName)) return false;
-
-            return true;
+            return myDebuggerName.equals(item.myDebuggerName);
         }
 
         @Override
@@ -270,14 +277,20 @@ class AttachToLocalMayaProcessAction extends AnAction
     }
 
     public static class AttachItem {
-        @NotNull private final XLocalAttachGroup myGroup;
+        @NotNull
+        private final XLocalAttachGroup myGroup;
         private final boolean myIsFirstInGroup;
-        @NotNull private final String myGroupName;
-        @NotNull private UserDataHolder myDataHolder;
-        @NotNull private final ProcessInfo myProcessInfo;
-        @NotNull private final List<XLocalAttachDebugger> myDebuggers;
+        @NotNull
+        private final String myGroupName;
+        @NotNull
+        private UserDataHolder myDataHolder;
+        @NotNull
+        private final ProcessInfo myProcessInfo;
+        @NotNull
+        private final List<XLocalAttachDebugger> myDebuggers;
         private final int mySelectedDebugger;
-        @NotNull private final List<AttachToLocalMayaProcessAction.AttachItem> mySubItems;
+        @NotNull
+        private final List<AttachToLocalMayaProcessAction.AttachItem> mySubItems;
 
         public AttachItem(@NotNull XLocalAttachGroup group,
                           boolean isFirstInGroup,
@@ -307,8 +320,7 @@ class AttachToLocalMayaProcessAction extends AnAction
 
             if (debuggers.size() > 1) {
                 mySubItems = ContainerUtil.map(debuggers, debugger -> new AttachToLocalMayaProcessAction.AttachItem(myGroup, false, myProcessInfo, Collections.singletonList(debugger), dataHolder));
-            }
-            else {
+            } else {
                 mySubItems = Collections.emptyList();
             }
         }
@@ -361,15 +373,15 @@ class AttachToLocalMayaProcessAction extends AnAction
 
             try {
                 debugger.attachDebugSession(project, myProcessInfo);
-            }
-            catch (ExecutionException e) {
+            } catch (ExecutionException e) {
                 ExecutionUtil.handleExecutionError(project, ToolWindowId.DEBUG, myProcessInfo.getExecutableName(), e);
             }
         }
     }
 
     private static class MyBasePopupStep extends BaseListPopupStep<AttachToLocalMayaProcessAction.AttachItem> {
-        @NotNull final Project myProject;
+        @NotNull
+        final Project myProject;
 
         public MyBasePopupStep(@NotNull Project project,
                                @Nullable String title,
