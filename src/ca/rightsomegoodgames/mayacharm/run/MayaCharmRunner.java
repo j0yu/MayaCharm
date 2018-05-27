@@ -28,8 +28,8 @@ public class MayaCharmRunner extends GenericProgramRunner {
 
     @Nullable
     @Override
-    protected RunContentDescriptor doExecute(@NotNull Project project, @NotNull RunProfileState state,
-                                             @Nullable RunContentDescriptor contentToReuse, @NotNull ExecutionEnvironment environment) throws ExecutionException {
+    protected RunContentDescriptor doExecute(RunProfileState state, ExecutionEnvironment environment)  {
+        final Project project = environment.getProject();
         final MayaCharmRunProfile configuration = (MayaCharmRunProfile) environment.getRunProfile();
         final MCSettingsProvider settingsProvider = MCSettingsProvider.getInstance(project);
         final MayaCommInterface mayaCommInterface = new MayaCommInterface(settingsProvider.getHost(), settingsProvider.getPort());
