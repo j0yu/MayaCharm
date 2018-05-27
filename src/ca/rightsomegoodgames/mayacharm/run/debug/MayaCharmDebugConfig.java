@@ -1,6 +1,7 @@
 package ca.rightsomegoodgames.mayacharm.run.debug;
 
 import ca.rightsomegoodgames.mayacharm.run.MayaCharmRunProfile;
+import ca.rightsomegoodgames.mayacharm.settings.MCSettingsProvider;
 import com.intellij.execution.configurations.RunConfiguration;
 import com.intellij.execution.configurations.RuntimeConfigurationException;
 import com.intellij.openapi.options.SettingsEditor;
@@ -21,9 +22,16 @@ public class MayaCharmDebugConfig extends PyRemoteDebugConfiguration implements 
     private String scriptFilePath;
     private String scriptCodeText;
     private ExecutionType executionType = ExecutionType.DEBUG;
+    private MCSettingsProvider mcSettingsProvider;
+
 
     public MayaCharmDebugConfig(Project project, MayaCharmDebugConfigFactory configurationFactory, String s) {
         super(project, configurationFactory, s);
+        mcSettingsProvider = MCSettingsProvider.getInstance(project);
+        setHost(mcSettingsProvider.getHost());
+        setPort(mcSettingsProvider.getDebuggerPort());
+        setRedirectOutput(mcSettingsProvider.getRedirectOutput());
+        setSuspendAfterConnect(mcSettingsProvider.getSuspendAfterConnect());
     }
 
     @NotNull
@@ -105,7 +113,7 @@ public class MayaCharmDebugConfig extends PyRemoteDebugConfiguration implements 
     @Override
     public int getPort() {
         int port = super.getPort();
-        return (port == 0 || port == -1) ? 60059 : port;
+        return (port == 0 || port == -1) ? mcSettingsProvider.getDebuggerPort() : port;
     }
 
     public enum ExecutionType {

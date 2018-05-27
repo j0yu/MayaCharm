@@ -60,6 +60,9 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
     public void loadState(State state) {
         myState.Host = state.Host;
         myState.CmdPort = state.CmdPort;
+        myState.DebuggerPort = state.DebuggerPort;
+        myState.RedirectOutput = state.RedirectOutput;
+        myState.SuspendAfterConnect = state.SuspendAfterConnect;
     }
 
     public static class State {
