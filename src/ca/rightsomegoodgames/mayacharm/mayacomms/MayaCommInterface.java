@@ -1,18 +1,15 @@
 package ca.rightsomegoodgames.mayacharm.mayacomms;
 
-import ca.rightsomegoodgames.mayacharm.resources.MayaCharmProperties;
 import ca.rightsomegoodgames.mayacharm.resources.MayaNotifications;
 import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
 import com.intellij.openapi.application.PathManager;
 import com.intellij.notification.Notifications;
-import org.apache.sanselan.util.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
-import java.net.Socket;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.nio.file.*;
 import java.text.MessageFormat;
 
 public class MayaCommInterface {
@@ -105,25 +102,18 @@ public class MayaCommInterface {
     public void pyDevSetup() {
         Path installDir = Paths.get(PathManager.getBinPath()).getParent();
         File debugEggPath = new File(installDir.toString(), "debug-eggs" + File.separator + "pycharm-debug.egg");
-        ClassLoader classLoader = getClass().getClassLoader();
+        URL pydev_setup_resource = getClass().getClassLoader().getResource("python/pydev_setup.py");
+        String pydev_setup_cmds = "";
 
-        InputStream resourceAsStream = classLoader.getResourceAsStream("python/pydev_setup.py");
-        String lines = "";
         try {
-            byte[] bytes = IOUtils.getInputStreamBytes(resourceAsStream);
-            lines = new String(bytes, StandardCharsets.UTF_8);
-        } catch (IOException e) {
+            URI pydev_setup_uri = pydev_setup_resource.toURI();
+            byte[] bytes = Files.readAllBytes(Paths.get(pydev_setup_uri));
+            pydev_setup_cmds = new String(bytes, StandardCharsets.UTF_8);
+        } catch (IOException | URISyntaxException | NullPointerException e) {
             e.printStackTrace();
         }
-        lines = String.format(lines, debugEggPath);
-        sendCodeToMaya(lines);
-    }
 
-    public void pyDevSetup2() {
-        sendCodeToMaya(String.format(
-                MayaCharmProperties.getString("pydevdscript.syspath"),
-                PythonStrings.PYDEVD_FOLDER
-        ));
+        sendCodeToMaya(String.format(pydev_setup_cmds, debugEggPath));
     }
 
     public void setTrace(int port, boolean suspend, boolean print) {

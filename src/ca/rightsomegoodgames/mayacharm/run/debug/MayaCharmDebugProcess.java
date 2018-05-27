@@ -35,7 +35,7 @@ public class MayaCharmDebugProcess extends PyRemoteDebugProcess {
     @Override
     protected void beforeConnect() {
         if (canConnect) {
-            mayaCommInterface.pyDevSetup2();
+            mayaCommInterface.pyDevSetup();
             if (mayaCommInterface.isSendSuccess()) {
                 if (config == null) {
                     mayaCommInterface.setTrace(socket.getLocalPort(), false, true);

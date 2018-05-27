@@ -28,7 +28,7 @@ public class MayaCharmProperties {
 
     /**Fetch the value for a key as a integer
      *
-     * @implNote Not sure if I should catch the exception and return defaultValue (like now) or just let it raise
+     * Not sure if I should catch the exception and return defaultValue (like now) or just let it raise
      *
      * @param propertyKey   Name of the property key to fetch value for  e.g. {@code "commandport.port"}
      * @param defaultValue  Integer value to use in case failure to convert property value (string) to integer
