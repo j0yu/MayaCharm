@@ -2,7 +2,11 @@ package ca.rightsomegoodgames.mayacharm.settings;
 
 import com.intellij.openapi.components.*;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.ui.Messages;
 import org.jetbrains.annotations.Nullable;
+
+import java.io.IOException;
+import java.net.ServerSocket;
 
 @State(
         name = "MCSettingsProvider",
@@ -63,6 +67,28 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
         myState.DebuggerPort = state.DebuggerPort;
         myState.RedirectOutput = state.RedirectOutput;
         myState.SuspendAfterConnect = state.SuspendAfterConnect;
+    }
+
+    public ServerSocket getDebuggerSocket() {
+        ServerSocket portSocket = null;
+        try {
+            portSocket = new ServerSocket(getDebuggerPort());
+        } catch (IOException portError) {
+            try {
+                String warningMessage = String.format("Cannot use port %s. ", getDebuggerPort());
+                portSocket = new ServerSocket(0);
+                portError.printStackTrace();
+                warningMessage += String.format("Using free port %s instead.", portSocket.getLocalPort());
+                Messages.showWarningDialog(warningMessage, "Port Error");
+            } catch (IOException noFreePortsError) {
+                noFreePortsError.printStackTrace();
+                Messages.showErrorDialog(
+                        "Fatal Error: Failed to find free socket port.\nSocket returned is null",
+                        "No Free Ports"
+                );
+            }
+        }
+        return portSocket;
     }
 
     public static class State {
