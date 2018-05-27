@@ -14,12 +14,12 @@ import org.jetbrains.annotations.Nullable;
 public class MCSettingsProvider implements PersistentStateComponent<MCSettingsProvider.State> {
     private State myState = new State();
 
-    public void setPort(int port) {
-        myState.Port = port;
+    public void setCmdPort(int port) {
+        myState.CmdPort = port;
     }
 
-    public int getPort() {
-        return (myState.Port == -1 || myState.Port == 0) ? 4434 : myState.Port;
+    public int getCmdPort() {
+        return (myState.CmdPort == -1 || myState.CmdPort == 0) ? 4434 : myState.CmdPort;
     }
 
     public void setHost(String host) {
@@ -43,11 +43,11 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
     @Override
     public void loadState(State state) {
         myState.Host = state.Host;
-        myState.Port = state.Port;
+        myState.CmdPort = state.CmdPort;
     }
 
     public static class State {
-        public int Port;
+        public int CmdPort;
         public String Host;
     }
 }

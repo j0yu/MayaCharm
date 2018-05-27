@@ -32,7 +32,7 @@ public class MayaCharmRunner extends GenericProgramRunner {
                                              @Nullable RunContentDescriptor contentToReuse, @NotNull ExecutionEnvironment environment) throws ExecutionException {
         final MayaCharmRunProfile configuration = (MayaCharmRunProfile) environment.getRunProfile();
         final MCSettingsProvider settingsProvider = MCSettingsProvider.getInstance(project);
-        final MayaCommInterface mayaCommInterface = new MayaCommInterface(settingsProvider.getHost(), settingsProvider.getPort());
+        final MayaCommInterface mayaCommInterface = new MayaCommInterface(settingsProvider.getHost(), settingsProvider.getCmdPort());
 
         ToolWindow mayaLogWindow = ToolWindowManager.getInstance(project).getToolWindow("Maya Log");
         mayaLogWindow.activate(null, true, true);

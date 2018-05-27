@@ -14,7 +14,7 @@ public class SendBufferAction extends BaseSendAction {
         final MCSettingsProvider settings = MCSettingsProvider.getInstance(e.getProject());
         final VirtualFile data = e.getData(LangDataKeys.VIRTUAL_FILE);
         if (data != null) {
-            MayaCommInterface maya = new MayaCommInterface(settings.getHost(), settings.getPort());
+            MayaCommInterface maya = new MayaCommInterface(settings.getHost(), settings.getCmdPort());
             maya.sendFileToMaya(data.getPath());
         }
     }

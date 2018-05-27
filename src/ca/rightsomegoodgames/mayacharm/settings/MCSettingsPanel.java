@@ -10,27 +10,27 @@ import javax.swing.event.DocumentListener;
 public class MCSettingsPanel {
     private JPanel myPanel;
     private JTextField hostField;
-    private JTextField portField;
+    private JTextField cmdPortField;
     private JTextArea mayaString;
 
     private final  MCSettingsProvider mcSettingsProvider;
 
     public MCSettingsPanel(MCSettingsProvider provider) {
         mcSettingsProvider = provider;
-        portField.getDocument().addDocumentListener(new DocumentListener() {
+        cmdPortField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, portField.getText()));
+                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, cmdPortField.getText()));
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, portField.getText()));
+                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, cmdPortField.getText()));
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, portField.getText()));
+                mayaString.setText(String.format(PythonStrings.CMDPORT_SETUP_SCRIPT, cmdPortField.getText()));
             }
         });
         reset();
@@ -41,16 +41,16 @@ public class MCSettingsPanel {
     }
 
     public boolean isModified(){
-        return getPythonCommandPort() != mcSettingsProvider.getPort() ||
+        return getPythonCommandPort() != mcSettingsProvider.getCmdPort() ||
                 !getPythonHost().equals(mcSettingsProvider.getHost());
     }
 
     public int getPythonCommandPort() {
-        return StringUtil.parseInt(portField.getText(), -1);
+        return StringUtil.parseInt(cmdPortField.getText(), -1);
     }
 
     public void setPythonCommandPort(Integer value) {
-        portField.setText(value.toString());
+        cmdPortField.setText(value.toString());
     }
 
     public String getPythonHost() {
@@ -62,12 +62,12 @@ public class MCSettingsPanel {
     }
 
     public void apply() {
-        mcSettingsProvider.setPort(getPythonCommandPort());
+        mcSettingsProvider.setCmdPort(getPythonCommandPort());
         mcSettingsProvider.setHost(getPythonHost());
     }
 
     public void reset() {
-        setPythonCommandPort(mcSettingsProvider.getPort());
+        setPythonCommandPort(mcSettingsProvider.getCmdPort());
         setPythonHost(mcSettingsProvider.getHost());
     }
 }

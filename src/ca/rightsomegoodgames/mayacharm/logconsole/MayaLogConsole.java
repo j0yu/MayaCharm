@@ -44,7 +44,7 @@ public class MayaLogConsole extends LogConsoleImpl {
     public synchronized void clear() {
         super.clear();
         final String mayaLogPath = PathManager.getPluginTempPath()
-                + String.format(MayaCommInterface.LOG_FILENAME_STRING, settings.getPort());
+                + String.format(MayaCommInterface.LOG_FILENAME_STRING, settings.getCmdPort());
         try {
             PrintWriter writer = new PrintWriter(mayaLogPath);
             writer.print("");

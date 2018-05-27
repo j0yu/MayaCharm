@@ -23,7 +23,7 @@ public class MayaCharmDebugProcess extends PyRemoteDebugProcess {
         socket = serverSocket;
         config = (MayaCharmDebugConfig) xDebugSession.getRunProfile();
         settings = MCSettingsProvider.getInstance(getProject());
-        mayaCommInterface = new MayaCommInterface(settings.getHost(), settings.getPort());
+        mayaCommInterface = new MayaCommInterface(settings.getHost(), settings.getCmdPort());
     }
 
     @Override

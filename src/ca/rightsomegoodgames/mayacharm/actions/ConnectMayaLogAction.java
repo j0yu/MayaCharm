@@ -14,7 +14,7 @@ public class ConnectMayaLogAction extends BaseSendAction {
     @Override
     public void actionPerformed(@NotNull AnActionEvent e) {
         final MCSettingsProvider settings = MCSettingsProvider.getInstance(e.getProject());
-        MayaCommInterface maya = new MayaCommInterface(settings.getHost(), settings.getPort());
+        MayaCommInterface maya = new MayaCommInterface(settings.getHost(), settings.getCmdPort());
         maya.connectMayaLog();
     }
 }
