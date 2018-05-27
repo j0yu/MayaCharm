@@ -22,6 +22,22 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
         return (myState.CmdPort == -1 || myState.CmdPort == 0) ? 4434 : myState.CmdPort;
     }
 
+    public void setDebuggerPort(int port) {
+        myState.DebuggerPort = port;
+    }
+
+    public int getDebuggerPort() {
+        return (myState.DebuggerPort == -1 || myState.DebuggerPort == 0) ? 60059 : myState.DebuggerPort;
+    }
+
+    public void setRedirectOutput(boolean redirect) { myState.RedirectOutput = redirect; }
+
+    public boolean getRedirectOutput() { return myState.RedirectOutput; }
+
+    public void setSuspendAfterConnect(boolean redirect) { myState.SuspendAfterConnect = redirect; }
+
+    public boolean getSuspendAfterConnect() { return myState.SuspendAfterConnect; }
+
     public void setHost(String host) {
         myState.Host = host;
     }
@@ -48,6 +64,9 @@ public class MCSettingsProvider implements PersistentStateComponent<MCSettingsPr
 
     public static class State {
         public int CmdPort;
+        public int DebuggerPort;
         public String Host;
+        public boolean RedirectOutput;
+        public boolean SuspendAfterConnect;
     }
 }
