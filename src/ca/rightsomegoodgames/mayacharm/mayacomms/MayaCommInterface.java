@@ -104,8 +104,7 @@ public class MayaCommInterface {
         try {
             createMayaLog(mayaLogPath);
             sendCodeToMaya(message);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
