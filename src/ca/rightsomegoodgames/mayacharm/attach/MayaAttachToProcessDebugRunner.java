@@ -15,6 +15,7 @@ import com.jetbrains.python.debugger.PyLocalPositionConverter;
 import com.jetbrains.python.debugger.PyRemoteDebugProcess;
 import com.jetbrains.python.debugger.attach.PyAttachToProcessCommandLineState;
 import com.jetbrains.python.debugger.attach.PyAttachToProcessDebugRunner;
+import org.apache.commons.lang.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.net.ServerSocket;
@@ -53,33 +54,55 @@ public class MayaAttachToProcessDebugRunner extends PyAttachToProcessDebugRunner
                                 result.getProcessHandler(), "") {
                             @Override
                             protected void printConsoleInfo() {
-                                MCSettingsProvider settings = MCSettingsProvider.getInstance(myProject);
-                                String attachLocalScript = String.format(
-                                        PythonStrings.SETTRACE,
-                                        settings.getHost(),
-                                        serverSocket.getLocalPort(),
-                                        settings.getSuspendAfterConnect() ? "True" : "False",
-                                        settings.getRedirectOutput() ? "True" : "False"
+                                this.printToConsole(
+                                        String.format(
+                                                "Starting debug server at port: %1$d\n",
+                                                serverSocket.getLocalPort()
+                                        ),
+                                        ConsoleViewContentType.SYSTEM_OUTPUT
                                 );
-                                attachLocalScript = PythonStrings.PYDEV_SETUP_SCRIPT + attachLocalScript;
-
-                                String attachHint = String.format(
-                                        "Starting debug server at port %2$d\n" +
-                                        "Use the following code to connect to the debugger:\n\n\n%1$s\n\n\n",
-                                        attachLocalScript,
-                                        serverSocket.getLocalPort()
-                                );
-                                this.printToConsole(attachHint, ConsoleViewContentType.SYSTEM_OUTPUT);
                             }
 
                             @Override
                             protected String getConnectionMessage() {
-                                return "Attaching to a Maya(py) process with PID = " + myPid;
+                                return String.format(
+                                        "\n%3$s\nAttaching to a Maya(py) (PID: %1$s, Port: %2$s)\n\n",
+                                        myPid, serverSocket.getLocalPort(), StringUtils.repeat("-", 80)
+                                );
                             }
 
                             @Override
                             protected String getConnectionTitle() {
-                                return "Attaching Debugger";
+                                return "Attaching PyCharm Debugger to Maya's Python interpreter...";
+                            }
+
+                            @Override
+                            protected void afterConnect() {
+                                super.afterConnect();
+
+                                String connectedMessage = "FAILED to connect to Maya!";
+                                if (this.isConnected()) {
+                                    MCSettingsProvider settings = MCSettingsProvider.getInstance(myProject);
+                                    String attachLocalScript = String.format(
+                                            PythonStrings.SETTRACE,
+                                            settings.getHost(),
+                                            serverSocket.getLocalPort(),
+                                            settings.getSuspendAfterConnect() ? "True" : "False",
+                                            settings.getRedirectOutput() ? "True" : "False"
+                                    );
+                                    connectedMessage = String.format(
+                                            "Connected to Maya!" +
+                                            "\nRun the following line to your Python script to manually set-trace:" +
+                                            "\n\n%1$s\n",
+                                            attachLocalScript
+                                    );
+                                }
+                                connectedMessage = String.format(
+                                        "%1$s\n\n%2$s\n\n%1$s\n",
+                                        StringUtils.repeat("-", 80),
+                                        connectedMessage
+                                );
+                                this.printToConsole(connectedMessage, ConsoleViewContentType.SYSTEM_OUTPUT);
                             }
                         };
                     pyDebugProcess.setPositionConverter(new PyLocalPositionConverter());
