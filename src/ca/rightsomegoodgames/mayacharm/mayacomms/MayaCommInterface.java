@@ -6,12 +6,14 @@ import ca.rightsomegoodgames.mayacharm.resources.PythonStrings;
 import com.intellij.openapi.application.PathManager;
 
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.text.MessageFormat;
 
 public class MayaCommInterface {
     public static final String LOG_FILENAME_STRING = "/mayalog%s.txt";
 
+    private boolean sendSuccess = false;
     final private String host;
     final private int port;
     final private String logFilename;
@@ -37,8 +39,7 @@ public class MayaCommInterface {
             bw.write(text);
             bw.close();
             tempFile.deleteOnExit();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             Notifications.Bus.notify(MayaNotifications.FILE_FAIL);
             e.printStackTrace();
         }
@@ -49,6 +50,7 @@ public class MayaCommInterface {
         Socket client = null;
         PrintWriter out = null;
 
+        sendSuccess = false;
         try {
             client = new Socket(host, port);
             out = new PrintWriter(client.getOutputStream(), true);
@@ -56,10 +58,21 @@ public class MayaCommInterface {
             String outString = MessageFormat.format(
                     PythonStrings.EXECFILE, message.toString().replace("\\", "/"));
             out.println(outString);
+            sendSuccess = true;
         }
         catch (IOException e) {
             Notifications.Bus.notify(MayaNotifications.CONNECTION_REFUSED);
-            e.printStackTrace();
+
+            // Tack on host and port information
+            String extendedMessage = String.format("(%s:%s) %s", host, port, e.getLocalizedMessage());
+            try {
+                IOException eExtended = e.getClass().getConstructor(String.class).newInstance(extendedMessage);
+                eExtended.setStackTrace(e.getStackTrace());
+                eExtended.printStackTrace();
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e1) {
+                new IOException(extendedMessage, e).printStackTrace();
+            }
+            sendSuccess = false;
         }
         finally {
             if (out != null)
@@ -104,8 +117,7 @@ public class MayaCommInterface {
         try {
             createMayaLog(mayaLogPath);
             sendCodeToMaya(message);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -117,5 +129,9 @@ public class MayaCommInterface {
             mayaLog.createNewFile();
         }
         return mayaLog;
+    }
+
+    public boolean isSendSuccess() {
+        return sendSuccess;
     }
 }
